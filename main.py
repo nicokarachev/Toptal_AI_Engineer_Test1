@@ -10,6 +10,8 @@ import pandas as pd
 from PIL import Image
 from typing import Tuple, List, Generator       
 
+image_extensions = {'.jpg', '.jpeg',  '.png', '.bmp', '.tiff', '.tif'}
+
 def make_square(image: np.ndarray, target_size: int = 224) -> np.ndarray:
 
     h, w, c = image.shape
@@ -44,13 +46,11 @@ def data_loader(zip_path: str, res_type: str = "train") -> Generator[Tuple[List[
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         file_list = zip_ref.namelist()
 
-        image_extensions = {'.jpg', '.jpeg',  '.png', '.bmp', '.tiff', '.tif'}
+        
         image_files = [
             f for f in file_list
             if any(f.lower().endswith(ext) for ext in image_extensions)
         ]
-
-        print(f"Found {len(image_files)} image files in zip")
         
         df = ""
         
@@ -111,6 +111,7 @@ def score(data_loader, subset="training"):
     try:
         for i in range(15):
             batch_images, batch_labels = next(data_loader(zip, subset))
+            print(batch_labels)
             for batch_image in batch_images:
 	    # if your images are returned as numpy arrays
                 unique_images.append(batch_image.astype("uint8").ravel())
