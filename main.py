@@ -6,8 +6,9 @@ import os
 import numpy as np
 import cv2
 import io
+import pandas as pd
 from PIL import Image
-from typing import Tuple, List, Generator
+from typing import Tuple, List, Generator       
 
 def make_square(image: np.ndarray, target_size: int = 224) -> np.ndarray:
 
@@ -50,19 +51,31 @@ def data_loader(zip_path: str, res_type: str = "train") -> Generator[Tuple[List[
         ]
 
         print(f"Found {len(image_files)} image files in zip")
+        
+        df = ""
+        
+        with zip_ref.open("crop.csv") as f:
+            df = pd.read_csv(f)
 
-        batch_size = 32
+        batch_size = 10 #len(image_files) / 5
         current_batch_images = []
         current_batch_labels = []
 
         for i, image_file in enumerate(image_files):
             try:
                 with zip_ref.open(image_file) as file:
+                    
+                    rows = df[df["file_name"] == image_file]
+                    
                     image_data = file.read()
                     pil_image = Image.open(io.BytesIO(image_data))
 
                     if pil_image.mode != 'RGB':
                         pil_image = pil_image.convert('RGB')
+                        
+                    if not rows.empty:
+                        row = rows.iloc[0]  # get first row as Series
+                        pil_image = pil_image.crop((row['x_start'], row['y_start'], row['x_end'], row['y_end']))
                     
                     image_array = np.array(pil_image)
 
