@@ -12,7 +12,7 @@ from typing import Tuple, List, Generator
 
 image_extensions = {'.jpg', '.jpeg',  '.png', '.bmp', '.tiff', '.tif'}
 
-def make_square(image: np.ndarray, target_size: int = 224) -> np.ndarray:
+def make_square(image: np.ndarray, target_size: int = 800) -> np.ndarray:
 
     h, w, c = image.shape
     
@@ -45,7 +45,6 @@ def data_loader(zip_path: str, res_type: str = "train") -> Generator[Tuple[List[
     
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         file_list = zip_ref.namelist()
-
         
         image_files = [
             f for f in file_list
@@ -63,6 +62,7 @@ def data_loader(zip_path: str, res_type: str = "train") -> Generator[Tuple[List[
 
         for i, image_file in enumerate(image_files):
             try:
+                
                 with zip_ref.open(image_file) as file:
                     
                     rows = df[df["file_name"] == image_file]
@@ -101,7 +101,8 @@ def data_loader(zip_path: str, res_type: str = "train") -> Generator[Tuple[List[
 def score(data_loader, subset="training"):
     ds=None
     zip='Test Pipeline T1.zip'
-    batch_images, batch_labels = next(data_loader(zip, subset))
+    gen = data_loader(zip, subset)
+    batch_images, batch_labels = next(gen)
     print('batch size', len(batch_images))
     print('Image dimensions: ', batch_images[0].shape)
     print("Classnames found: ",np.unique(np.array(batch_labels)))
@@ -110,8 +111,8 @@ def score(data_loader, subset="training"):
     unique_images = []
     try:
         for i in range(15):
-            batch_images, batch_labels = next(data_loader(zip, subset))
-            print(batch_labels)
+            batch_images, batch_labels = next(gen)
+            # print(batch_images)
             for batch_image in batch_images:
 	    # if your images are returned as numpy arrays
                 unique_images.append(batch_image.astype("uint8").ravel())
@@ -120,7 +121,6 @@ def score(data_loader, subset="training"):
         print("Unique images loaded: ", len(np.unique(unique_images, axis=0)))            
     except Exception as e:
         print("Error loading 10 batches")
-
 
 score(data_loader, 'training')
 
