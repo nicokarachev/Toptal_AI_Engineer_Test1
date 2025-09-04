@@ -7,7 +7,7 @@ Task Description
 
 "Test Pipeline T1.zip" is dataset
 
-REQUIREMENTS
+## REQUIREMENTS
 
 -Create a data loading pipeline that loads the dataset. Your solution must be robust for very large datasets, assuming that NO MORE THAN 20 percent of the images can fit in the available memory. Do not forget the labels.
 
@@ -19,7 +19,7 @@ Implement the data loading pipeline as a generator.
 Download the dataset here: https://topt.al/MrcKdb
 
 
-#if you use Google Colab or have wget, you can (but do not have to) load the dataset with:
+### if you use Google Colab or have wget, you can (but do not have to) load the dataset with:
 ! wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1GIR3hdXVVr0uYWXdZdb5XKDdJUFlFeR4' -O 'Test Pipeline T1.zip'
 
 def score(data_loader, subset="training"):
